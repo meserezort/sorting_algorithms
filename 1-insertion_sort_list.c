@@ -1,47 +1,59 @@
 #include "sort.h"
+/*
+* 88 88b 88 .dP"Y8 888888 88""Yb 888888 88  dP"Yb  88b 88
+* 88 88Yb88 `Ybo." 88__   88__dP   88   88 dP   Yb 88Yb88
+* 88 88 Y88 o.`Y8b 88""   88"Yb    88   88 Yb   dP 88 Y88
+* 88 88  Y8 8bodP' 888888 88  Yb   88   88  YbodP  88  Y8
+*/
+void move_left(listint_t *curr, listint_t *insertion, listint_t **head);
 /**
- * insertion_sort_list - function that sorts a doubly linked list
- * of integers in ascending order using the Insertion sort algorithm
- * @list: Dobule linked list to sort
+ * insertion_sort_list - sort a doubly linked list of integer
+ * in ascending order
+ * @list: pointer to the head of the doubly linked list
  */
+
 void insertion_sort_list(listint_t **list)
 {
-	listint_t *node;
+	listint_t *curr = NULL;
+	listint_t *insertion = NULL;
 
-	if (list == NULL || (*list)->next == NULL)
+	if (list == NULL || *list == NULL || (*list)->next == NULL)
 		return;
-	node = (*list)->next;
-	while (node)
+
+	curr = (*list)->next;
+	insertion = curr->prev;
+	while (curr != NULL)
 	{
-		while ((node->prev) && (node->prev->n > node->n))
+		insertion = curr->prev;
+		while (insertion != NULL && insertion->n > curr->n)
 		{
-			node = swap_node(node, list);
-			print_list(*list);
+			move_left(curr, insertion, list);
+			insertion = curr->prev;
 		}
-		node = node->next;
+		curr = curr->next;
 	}
 }
 /**
- *swap_node - swap a node for his previous one
- *@node: node
- *@list: node list
- *Return: return a pointer to a node which was enter it
- */
-listint_t *swap_node(listint_t *node, listint_t **list)
+* move_left - swaps two members of a list
+*
+* @curr: current node to be moved at left of insertion
+* @insertion: insertion pointer
+* @head: head of list
+*/
+void move_left(listint_t *curr, listint_t *insertion, listint_t **head)
 {
-	listint_t *back = node->prev, *current = node;
-	/*NULL, 19, 48, 9, 71, 13, NULL*/
+	listint_t *swap1 = curr->next;
+	listint_t *swap2 = insertion->prev;
 
-	back->next = current->next;
-	if (current->next)
-		current->next->prev = back;
-	current->next = back;
-	current->prev = back->prev;
-	back->prev = current;
-	if (current->prev)
-		current->prev->next = current;
-	else
-		*list = current;
-	return (current);
+	if (swap1 != NULL)
+		swap1->prev = insertion;
+	if (swap2 != NULL)
+		swap2->next = curr;
+	curr->prev = swap2;
+	insertion->next = swap1;
+	curr->next = insertion;
+	insertion->prev = curr;
+	if (*head == insertion)
+		*head = curr;
+	print_list(*head);
 }
-
